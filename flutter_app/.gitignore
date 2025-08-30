@@ -43,6 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 
@@ -50,3 +51,5 @@ app.*.map.json
 >>>>>>> 1034f70 ( moved secrets to correct gitignore)
 .env
 .env.production
+=======
+>>>>>>> d00d9210a4ba15460a5cb47e90bea4d55e709dd8

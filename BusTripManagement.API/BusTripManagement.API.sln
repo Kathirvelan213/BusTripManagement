@@ -5,10 +5,13 @@ VisualStudioVersion = 17.14.36301.6 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusTripManagement.API", "BusTripManagement.API.csproj", "{F9E7674C-510D-4884-9861-ADE0AE8F315D}"
 EndProject
+<<<<<<< HEAD
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusTripManagement.BAL", "..\BusTripManagement.BAL\BusTripManagement.BAL.csproj", "{C727D66B-6C96-4BD6-8A79-35B7F51EC05C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusTripManagement.DAL", "..\BusTripManagement.DAL\BusTripManagement.DAL.csproj", "{1B76D08E-68CD-45FF-BCDA-D548D2C18F6A}"
 EndProject
+=======
+>>>>>>> d00d9210a4ba15460a5cb47e90bea4d55e709dd8
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +22,7 @@ Global
 		{F9E7674C-510D-4884-9861-ADE0AE8F315D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9E7674C-510D-4884-9861-ADE0AE8F315D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9E7674C-510D-4884-9861-ADE0AE8F315D}.Release|Any CPU.Build.0 = Release|Any CPU
+<<<<<<< HEAD
 		{C727D66B-6C96-4BD6-8A79-35B7F51EC05C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C727D66B-6C96-4BD6-8A79-35B7F51EC05C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C727D66B-6C96-4BD6-8A79-35B7F51EC05C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -27,6 +31,8 @@ Global
 		{1B76D08E-68CD-45FF-BCDA-D548D2C18F6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1B76D08E-68CD-45FF-BCDA-D548D2C18F6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1B76D08E-68CD-45FF-BCDA-D548D2C18F6A}.Release|Any CPU.Build.0 = Release|Any CPU
+=======
+>>>>>>> d00d9210a4ba15460a5cb47e90bea4d55e709dd8
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

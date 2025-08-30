@@ -1,6 +1,10 @@
 name: flutter_app
 description: "A new Flutter project."
+<<<<<<< HEAD
 publish_to: "none"
+=======
+publish_to: 'none'
+>>>>>>> d00d9210a4ba15460a5cb47e90bea4d55e709dd8
 version: 0.1.0
 
 environment:
@@ -14,6 +18,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+<<<<<<< HEAD
   syncfusion_flutter_maps: ^28.1.38
   signalr_netcore: ^1.4.3
   location: ^5.0.3
@@ -24,3 +29,8 @@ flutter:
   assets:
     - .env
     - .env.production
+=======
+
+flutter:
+  uses-material-design: true
+>>>>>>> d00d9210a4ba15460a5cb47e90bea4d55e709dd8

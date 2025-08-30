@@ -6,8 +6,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+<<<<<<< HEAD
   <ItemGroup>
     <ProjectReference Include="..\BusTripManagement.DAL\BusTripManagement.DAL.csproj" />
   </ItemGroup>
 
+=======
+>>>>>>> d00d9210a4ba15460a5cb47e90bea4d55e709dd8
 </Project>
