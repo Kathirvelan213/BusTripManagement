@@ -1,0 +1,10 @@
+C:/Pers/Projects/IFP/BusTripManagement/build/CMakeFiles/INSTALL.dir
+C:/Pers/Projects/IFP/BusTripManagement/build/CMakeFiles/ALL_BUILD.dir
+C:/Pers/Projects/IFP/BusTripManagement/build/CMakeFiles/ZERO_CHECK.dir
+C:/Pers/Projects/IFP/BusTripManagement/build/flutter/CMakeFiles/flutter_wrapper_plugin.dir
+C:/Pers/Projects/IFP/BusTripManagement/build/flutter/CMakeFiles/flutter_wrapper_app.dir
+C:/Pers/Projects/IFP/BusTripManagement/build/flutter/CMakeFiles/flutter_assemble.dir
+C:/Pers/Projects/IFP/BusTripManagement/build/flutter/CMakeFiles/INSTALL.dir
+C:/Pers/Projects/IFP/BusTripManagement/build/runner/CMakeFiles/flutter_app.dir
+C:/Pers/Projects/IFP/BusTripManagement/build/runner/CMakeFiles/INSTALL.dir
+C:/Pers/Projects/IFP/BusTripManagement/build/runner/CMakeFiles/ALL_BUILD.dir
