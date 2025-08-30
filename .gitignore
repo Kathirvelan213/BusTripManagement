@@ -33,3 +33,6 @@ appsettings.Development.json
 
 Properties/PublishProfiles/
 new
+
+.env
+.env.production
