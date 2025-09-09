@@ -10,11 +10,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
-<<<<<<< HEAD
   <ItemGroup>
     <ProjectReference Include="..\BusTripManagement.BAL\BusTripManagement.BAL.csproj" />
   </ItemGroup>
-
-=======
->>>>>>> d00d9210a4ba15460a5cb47e90bea4d55e709dd8
 </Project>
