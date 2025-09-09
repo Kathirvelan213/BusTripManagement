@@ -1,4 +1,4 @@
-﻿namespace BusTripManagement.BAL
+﻿namespace BusTripManagement.Models
 {
     public class Class1
     {
