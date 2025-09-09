@@ -8,5 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BusTripManagement.DAL\BusTripManagement.DAL.csproj" />
+    <ProjectReference Include="..\BusTripManagement.Models\BusTripManagement.Models.csproj" />
   </ItemGroup>
 </Project>

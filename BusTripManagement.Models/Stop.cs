@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace BusTripManagement.Models
 {
-    internal class Stop
+    public class Stop
     {
+        public int StopId { get; set; }         
+        public string Name { get; set; } = null!;
+        public decimal Lat { get; set; }
+        public decimal Lng { get; set; }
     }
 }
+

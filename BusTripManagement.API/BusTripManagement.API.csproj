@@ -13,5 +13,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BusTripManagement.BAL\BusTripManagement.BAL.csproj" />
+    <ProjectReference Include="..\BusTripManagement.Models\BusTripManagement.Models.csproj" />
   </ItemGroup>
 </Project>

@@ -8,7 +8,7 @@ using Microsoft.Data.SqlClient;
 using System.Data;
 using Dapper;
 
-namespace FarmersGrid.DAL
+namespace BusTripManagement.DAL
 {
     public class DbService
     {

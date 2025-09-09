@@ -1,4 +1,6 @@
 using BusTripManagement.API.Hubs;
+using BusTripManagement.BAL;
+using BusTripManagement.DAL;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -20,7 +22,20 @@ builder.Services.AddSignalR();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<DbService>();
+
+builder.Services.AddScoped<BusRoutesManager>();
+builder.Services.AddScoped<BusRouteData>();
+
+builder.Services.AddScoped<StopsManager>();
+builder.Services.AddScoped<StopsData>();
+
+builder.Services.AddScoped<RouteStopsManager>();
+builder.Services.AddScoped<RouteStopsData>();
+
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
