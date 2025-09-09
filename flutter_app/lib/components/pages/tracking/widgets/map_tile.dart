@@ -42,11 +42,11 @@ class _MapTileState extends State<MapTile> {
     return FlutterMap(
       mapController: _mapController,
       options: MapOptions(
-        initialCenter: LatLng(27.1751, 78.0421), // Taj Mahal area
+        initialCenter: LatLng(27.1751, 78.0421),
         initialZoom: 5,
         minZoom: 2,
         maxZoom: 20,
-        initialRotation: 0, // ensure initial rotation is 0
+        initialRotation: 0,
         interactionOptions: InteractionOptions(
             flags: InteractiveFlag.drag | InteractiveFlag.pinchZoom),
         // clamp to valid world bounds (no white borders)
@@ -58,18 +58,18 @@ class _MapTileState extends State<MapTile> {
         ),
       ),
       children: [
-        // Tile layer (your map provider)
         TileLayer(
           urlTemplate: dotenv.env['MAP_TILE_URL']!,
           userAgentPackageName: 'com.example.flutter_app',
           panBuffer: 2, // optional, smoother wrapping
         ),
-        PolylineLayer(
-          polylines: [
-            for (final points in routePoints)
-              Polyline(points: points, strokeWidth: 4, color: Colors.blue),
+        PolylineLayer(polylines: [
+          for (final route in routePoints) ...[
+            Polyline(points: route, strokeWidth: 8, color: Colors.white),
+            Polyline(
+                points: route, strokeWidth: 4, color: Colors.blue.shade600),
           ],
-        ),
+        ]),
         // Marker layer (your current location)
         MarkerLayer(
           markers: [
