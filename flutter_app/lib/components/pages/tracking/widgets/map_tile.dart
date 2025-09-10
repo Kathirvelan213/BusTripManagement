@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/routeCoordinates.dart';
+import 'package:flutter_app/services/api_consumer/route_coordinates_api.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_app/services/location_services/location_service.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -19,16 +21,21 @@ class _MapTileState extends State<MapTile> {
   final MapController _mapController = MapController();
 
   List<List<LatLng>> routePoints = [];
+
   @override
   void initState() {
     super.initState();
 
     _currentLocation = LatLng(0, 0);
-    loadRouteFromFile('lib/routes/HomeToSSN.kml').then((points) {
+
+    getRouteCoordinates(1).then((segments) {
       setState(() {
-        routePoints = points;
+        routePoints = segments
+            .map((seg) => seg.map((c) => LatLng(c.lat, c.lng)).toList())
+            .toList();
       });
     });
+
     locationService.stream.listen((locationData) {
       setState(() {
         _currentLocation =
@@ -48,7 +55,11 @@ class _MapTileState extends State<MapTile> {
         maxZoom: 20,
         initialRotation: 0,
         interactionOptions: InteractionOptions(
-            flags: InteractiveFlag.drag | InteractiveFlag.pinchZoom),
+          flags: InteractiveFlag.drag |
+              InteractiveFlag.pinchZoom |
+              InteractiveFlag.doubleTapZoom |
+              InteractiveFlag.scrollWheelZoom,
+        ),
         // clamp to valid world bounds (no white borders)
         cameraConstraint: CameraConstraint.contain(
           bounds: LatLngBounds(

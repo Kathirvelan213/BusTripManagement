@@ -33,6 +33,9 @@ builder.Services.AddScoped<StopsData>();
 builder.Services.AddScoped<RouteStopsManager>();
 builder.Services.AddScoped<RouteStopsData>();
 
+builder.Services.AddScoped<RouteCoordinateManager>();
+builder.Services.AddScoped<RouteCoordinateData>();
+
 var app = builder.Build();
 
 
