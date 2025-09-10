@@ -1,5 +1,5 @@
 -- CREATE
-CREATE PROCEDURE sp_CreateStop
+CREATE PROCEDURE usp_CreateStop
     @name NVARCHAR(100),
     @lat DECIMAL(9,6),
     @lng DECIMAL(9,6)
@@ -13,7 +13,7 @@ END
 GO
 
 -- READ (all)
-CREATE PROCEDURE sp_GetStops
+CREATE PROCEDURE usp_GetStops
 AS
 BEGIN
     SELECT * FROM stops;
@@ -21,7 +21,7 @@ END
 GO
 
 -- READ (by ID)
-CREATE PROCEDURE sp_GetStopById
+CREATE PROCEDURE usp_GetStopById
     @stop_id INT
 AS
 BEGIN
@@ -30,7 +30,7 @@ END
 GO
 
 -- UPDATE
-CREATE PROCEDURE sp_UpdateStop
+CREATE PROCEDURE usp_UpdateStop
     @stop_id INT,
     @name NVARCHAR(100),
     @lat DECIMAL(9,6),
@@ -46,7 +46,7 @@ END
 GO
 
 -- DELETE
-CREATE PROCEDURE sp_DeleteStop
+CREATE PROCEDURE usp_DeleteStop
     @stop_id INT
 AS
 BEGIN

@@ -15,7 +15,7 @@ CREATE TABLE route_coordinates (
 );
 CREATE TABLE stops (
     stop_id INT IDENTITY(1,1) PRIMARY KEY,
-    name NVARCHAR(100) NOT NULL,
+    name NVARCHAR(100) NOT NULL,	
     lat DECIMAL(9,6) NOT NULL,
     lng DECIMAL(9,6) NOT NULL
 );
