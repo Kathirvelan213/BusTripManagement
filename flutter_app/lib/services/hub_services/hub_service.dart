@@ -50,5 +50,15 @@ class HubService {
     _hubConnection.off(eventName);
   }
 
+  Future<Object?> invoke(String methodName, {List<Object>? args}) async {
+    try {
+      final result = await _hubConnection.invoke(methodName, args: args);
+      return result;
+    } catch (e) {
+      print("Invoke error [$methodName]: $e");
+      return null;
+    }
+  }
+
   bool get isConnected => _hubConnection.state == HubConnectionState.Connected;
 }

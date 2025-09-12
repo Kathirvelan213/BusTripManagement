@@ -4,7 +4,7 @@ class StopWidget extends StatelessWidget {
   final int stopNumber;
   final String stopName;
   final String time;
-  final bool reached; // true = green, false = red
+  final bool reached;
 
   const StopWidget({
     super.key,
@@ -19,7 +19,6 @@ class StopWidget extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Green/Red status dot with connector line
         Column(
           children: [
             Container(
@@ -38,7 +37,6 @@ class StopWidget extends StatelessWidget {
           ],
         ),
         const SizedBox(width: 12),
-        // Stop details
         Expanded(
           child: Card(
             margin: const EdgeInsets.symmetric(vertical: 8),

@@ -5,10 +5,10 @@ CREATE PROCEDURE usp_CreateStopRoute
     @sequence INT
 AS
 BEGIN
-    INSERT INTO stops_routes (route_id, stop_id, sequence)
+    INSERT INTO stopsRoutes (routeId, stopId, sequence)
     VALUES (@route_id, @stop_id, @sequence);
 
-    SELECT SCOPE_IDENTITY() AS NewStopRouteId;
+    SELECT SCOPE_IDENTITY() AS stopRouteId;
 END
 GO
 
@@ -17,13 +17,24 @@ CREATE PROCEDURE usp_GetStopsForRoute
     @route_id INT
 AS
 BEGIN
-    SELECT sr.stop_route_id, sr.sequence, s.stop_id, s.name, s.lat, s.lng
-    FROM stops_routes sr
-    JOIN stops s ON sr.stop_id = s.stop_id
-    WHERE sr.route_id = @route_id
+    SET NOCOUNT ON;
+
+    SELECT 
+        sr.stopRouteId,
+        sr.sequence,
+        sr.routeId,
+        s.stopId,
+        s.Name,
+        s.lat,
+        s.lng
+    FROM stopsRoutes sr
+    INNER JOIN stops s 
+        ON sr.stopId = s.stopId
+    WHERE sr.routeId = @route_id
     ORDER BY sr.sequence;
 END
 GO
+
 
 -- UPDATE
 CREATE PROCEDURE usp_UpdateStopRoute
@@ -33,7 +44,7 @@ AS
 BEGIN
     UPDATE stops_routes
     SET sequence = @sequence
-    WHERE stop_route_id = @stop_route_id;
+    WHERE stopRouteId = @stop_route_id;
 END
 GO
 
@@ -42,6 +53,8 @@ CREATE PROCEDURE usp_DeleteStopRoute
     @stop_route_id INT
 AS
 BEGIN
-    DELETE FROM stops_routes WHERE stop_route_id = @stop_route_id;
+    DELETE FROM stopsRoutes WHERE stopRouteId = @stop_route_id;
 END
 GO
+
+usp_GetStopsForRoute @route_Id=1;

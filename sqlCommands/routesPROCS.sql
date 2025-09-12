@@ -21,10 +21,10 @@ GO
 
 -- READ (by ID)
 CREATE PROCEDURE usp_GetRouteById
-    @route_id INT
+    @route_Id INT
 AS
 BEGIN
-    SELECT * FROM routes WHERE route_id = @route_id;
+    SELECT * FROM routes WHERE routeId = @route_id;
 END
 GO
 
@@ -38,7 +38,7 @@ BEGIN
     UPDATE routes
     SET name = @name,
         destination = @destination
-    WHERE route_id = @route_id;
+    WHERE routeId = @route_id;
 END
 GO
 
@@ -47,6 +47,6 @@ CREATE PROCEDURE usp_DeleteRoute
     @route_id INT
 AS
 BEGIN
-    DELETE FROM routes WHERE route_id = @route_id;
+    DELETE FROM routes WHERE routeId = @route_id;
 END
 GO

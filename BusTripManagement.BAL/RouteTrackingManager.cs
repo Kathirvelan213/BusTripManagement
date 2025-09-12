@@ -1,0 +1,77 @@
+﻿using BusTripManagement.Models;
+using BusTripManagement.DAL;
+
+namespace BusTripManagement.BAL
+{
+    public interface IRouteTrackingManager
+    {
+        Task<StopReachedResult?> ProcessLocation(int routeId, double lat, double lng);
+    }
+
+    public class RouteTrackingManager : IRouteTrackingManager
+    {
+        private readonly Dictionary<int, int> _nextStopIndex = new(); // routeId -> next stop index
+        private readonly Dictionary<int, List<RouteStop>> _routeStops; // cached stops  
+
+        private RouteStopsData _routeStopsData;
+
+        public RouteTrackingManager(RouteStopsData routeStopsData)
+        {
+            _routeStopsData = routeStopsData;
+        }
+
+        public async Task<StopReachedResult?> ProcessLocation(int routeId, double lat, double lng)
+        {
+            if (!_routeStops.ContainsKey(routeId))
+            {
+                var routeStops = await _routeStopsData.GetStopsForRoute(routeId);
+                _routeStops[routeId] = routeStops.ToList();
+            }
+
+            if (!_nextStopIndex.ContainsKey(routeId))
+                _nextStopIndex[routeId] = 0; // start from first stop
+
+            var stops = _routeStops[routeId];
+            var idx = _nextStopIndex[routeId];
+
+            if (idx >= stops.Count) return null; // already finished
+
+            var nextStop = stops[idx];
+            var distance = DistanceInMeters(lat, lng, nextStop.Lat, nextStop.Lng);
+
+            if (distance <= 50) // threshold in meters
+            {
+                _nextStopIndex[routeId]++; // move to next
+                return new StopReachedResult
+                {
+                    RouteId = routeId,
+                    StopNumber = nextStop.Sequence,
+                    StopName = nextStop.Name,
+                    Time = DateTime.Now
+                };
+            }
+
+            return null;
+        }
+
+        private double DistanceInMeters(double lat1, double lon1, double lat2, double lon2)
+        {
+            const double R = 6371000; // Earth's radius in meters
+            var dLat = (lat2 - lat1) * Math.PI / 180;
+            var dLon = (lon2 - lon1) * Math.PI / 180;
+            var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                    Math.Cos(lat1 * Math.PI / 180) * Math.Cos(lat2 * Math.PI / 180) *
+                    Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+            var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+            return R * c;
+        }
+    }
+
+    public class StopReachedResult
+    {
+        public int RouteId { get; set; }
+        public int StopNumber { get; set; }
+        public string StopName { get; set; } = string.Empty;
+        public DateTime Time { get; set; }
+    }
+}

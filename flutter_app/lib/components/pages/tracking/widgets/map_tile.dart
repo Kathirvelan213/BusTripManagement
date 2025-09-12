@@ -5,7 +5,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_app/services/location_services/location_service.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:flutter_app/routes/parsed_routes.dart';
 
 class MapTile extends StatefulWidget {
   const MapTile({super.key});

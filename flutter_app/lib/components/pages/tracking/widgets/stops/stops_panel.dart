@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import './stop.dart';
+import 'stopRecord.dart';
 
 class StopsPanel extends StatefulWidget {
   static const List<String> stops = [

@@ -25,7 +25,7 @@ CREATE PROCEDURE usp_GetStopById
     @stop_id INT
 AS
 BEGIN
-    SELECT * FROM stops WHERE stop_id = @stop_id;
+    SELECT * FROM stops WHERE stopId = @stop_id;
 END
 GO
 
@@ -41,7 +41,7 @@ BEGIN
     SET name = @name,
         lat = @lat,
         lng = @lng
-    WHERE stop_id = @stop_id;
+    WHERE stopId = @stop_id;
 END
 GO
 
@@ -50,6 +50,6 @@ CREATE PROCEDURE usp_DeleteStop
     @stop_id INT
 AS
 BEGIN
-    DELETE FROM stops WHERE stop_id = @stop_id;
+    DELETE FROM stops WHERE stopId = @stop_id;
 END
 GO

@@ -9,7 +9,7 @@ INSERT INTO stops (name, lat, lng) VALUES
 (N'Kattankulathur', 12.833987, 80.055432),
 (N'Guduvancherry', 12.839876, 80.060987);
  
-INSERT INTO stops_routes (route_id, stop_id, sequence) VALUES
+INSERT INTO stopsRoutes (routeId, stopId, sequence) VALUES
 (1, 1, 1),  -- Maraimalai Nagar
 (1, 2, 2),  -- Potheri
 (1, 3, 3),  -- Kattankulathur
