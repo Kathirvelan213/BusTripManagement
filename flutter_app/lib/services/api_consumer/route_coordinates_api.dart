@@ -4,8 +4,8 @@ import 'package:latlong2/latlong.dart';
 
 final ApiClient _apiClient = ApiClient();
 
-Future<List<List<RouteCoordinate>>> getRouteCoordinates(int routeId) async {
-  final data = await _apiClient.get("/RouteCoordinate/$routeId");
+Future<List<List<RouteCoordinate>>> getRouteSegments(int routeId) async {
+  final data = await _apiClient.get("/RouteCoordinate/segments/$routeId");
   // JSON key is "Segments" (capital S)
   final List<dynamic> segmentsJson = data["segments"];
 

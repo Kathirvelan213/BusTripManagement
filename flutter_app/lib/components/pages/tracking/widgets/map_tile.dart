@@ -27,7 +27,7 @@ class _MapTileState extends State<MapTile> {
 
     _currentLocation = LatLng(0, 0);
 
-    getRouteCoordinates(1).then((segments) {
+    getRouteSegments(1).then((segments) {
       setState(() {
         routePoints = segments
             .map((seg) => seg.map((c) => LatLng(c.lat, c.lng)).toList())
@@ -77,7 +77,7 @@ class _MapTileState extends State<MapTile> {
           for (final route in routePoints) ...[
             Polyline(points: route, strokeWidth: 8, color: Colors.white),
             Polyline(
-                points: route, strokeWidth: 4, color: Colors.blue.shade600),
+                points: route, strokeWidth: 4, color: Colors.blue.shade500),
           ],
         ]),
         // Marker layer (your current location)

@@ -43,12 +43,12 @@ namespace BusTripManagement.Controllers
                 Inserted = inserted
             });
         }
-        [HttpGet("{routeId}")]
-        public async Task<IActionResult> GetRouteCoordinates(int routeId)
+        [HttpGet("segments/{routeId}")]
+        public async Task<IActionResult> GetRouteSegments(int routeId)
         {
             if (routeId <= 0) return BadRequest("Invalid routeId.");
 
-            var segments = await _routeCoordinateManager.GetCoordinatesForRouteAsync(routeId);
+            var segments = await _routeCoordinateManager.GetRouteSegments(routeId);
 
 
             return Ok(new
@@ -56,6 +56,11 @@ namespace BusTripManagement.Controllers
                 RouteId = routeId,
                 Segments = segments
             });
+        }
+        [HttpGet("{routeId}")]
+        public async Task<ActionResult> GetRouteCoordinates(int routeId)
+        {
+            return Ok(await _routeCoordinateManager.GetRouteCoordinates(routeId));
         }
         
 

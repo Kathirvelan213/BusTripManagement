@@ -35,12 +35,12 @@ namespace BusTripManagement.DAL
 
             return await _dbService.ExecuteAsync("usp_InsertRouteCoordinates", parameters);
         }
-        public async Task<IEnumerable<RouteCoordinate>> GetCoordinatesAsync(int routeId)
+        public async Task<List<RouteCoordinate>> GetCoordinatesAsync(int routeId)
         {
             var parameters = new DynamicParameters();
             parameters.Add("@route_Id", routeId, DbType.Int32);
 
-            return await _dbService.QueryAsync<RouteCoordinate>("usp_GetRouteCoordinates", parameters);
+            return (List<RouteCoordinate>)await _dbService.QueryAsync<RouteCoordinate>("usp_GetRouteCoordinates", parameters);
         }
     }
 }

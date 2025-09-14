@@ -52,7 +52,7 @@ namespace BusTripManagement.BAL
 
             return coords;
         }
-        public async Task<List<List<RouteCoordinate>>> GetCoordinatesForRouteAsync(int routeId)
+        public async Task<List<List<RouteCoordinate>>> GetRouteSegments(int routeId)
         {
             var coords = await _routeCoordinateData.GetCoordinatesAsync(routeId);
             var segments = ProcessCoordinates(coords.ToList());
@@ -120,6 +120,10 @@ namespace BusTripManagement.BAL
                     Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
             var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
             return R * c;
+        }
+        public async Task<List<RouteCoordinate>> GetRouteCoordinates(int routeId)
+        {
+            return await _routeCoordinateData.GetCoordinatesAsync(routeId);
         }
 
     }

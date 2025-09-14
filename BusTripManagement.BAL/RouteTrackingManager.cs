@@ -1,27 +1,32 @@
-﻿using BusTripManagement.Models;
-using BusTripManagement.DAL;
+﻿using BusTripManagement.DAL;
+using BusTripManagement.Models;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BusTripManagement.BAL
 {
     public interface IRouteTrackingManager
     {
         Task<StopReachedResult?> ProcessLocation(int routeId, double lat, double lng);
+        void ResetRoute(int routeId);
     }
 
     public class RouteTrackingManager : IRouteTrackingManager
     {
-        private readonly Dictionary<int, int> _nextStopIndex = new(); // routeId -> next stop index
-        private readonly Dictionary<int, List<RouteStop>> _routeStops; // cached stops  
+        private readonly IServiceProvider _serviceProvider;
 
-        private RouteStopsData _routeStopsData;
+        private readonly Dictionary<int, int> _nextStopIndex = new();
+        private readonly Dictionary<int, List<RouteStop>> _routeStops = new();
 
-        public RouteTrackingManager(RouteStopsData routeStopsData)
+        public RouteTrackingManager(IServiceProvider serviceProvider)
         {
-            _routeStopsData = routeStopsData;
+            _serviceProvider = serviceProvider;
         }
 
         public async Task<StopReachedResult?> ProcessLocation(int routeId, double lat, double lng)
         {
+            // Create a new scope to safely resolve scoped services
+            using var scope = _serviceProvider.CreateScope();
+            var _routeStopsData = scope.ServiceProvider.GetRequiredService<RouteStopsData>();
             if (!_routeStops.ContainsKey(routeId))
             {
                 var routeStops = await _routeStopsData.GetStopsForRoute(routeId);
@@ -52,6 +57,12 @@ namespace BusTripManagement.BAL
             }
 
             return null;
+        }
+
+        public void ResetRoute(int routeId)
+        {
+            _nextStopIndex.Remove(routeId);
+            _routeStops.Remove(routeId);
         }
 
         private double DistanceInMeters(double lat1, double lon1, double lat2, double lon2)

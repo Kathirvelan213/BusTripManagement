@@ -6,14 +6,14 @@ namespace BusTripManagement.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class StopsRoutesController : ControllerBase
+    public class RouteStopsController : ControllerBase
     {
         private readonly RouteStopsManager _routeStopsManager;
 
         public record CreateStopRouteDTO(int RouteId, int StopId, int Sequence);
         public record UpdateStopRouteDTO(int StopRouteId, int Sequence);
 
-        public StopsRoutesController(RouteStopsManager stopsRoutesManager)
+        public RouteStopsController(RouteStopsManager stopsRoutesManager)
         {
             _routeStopsManager = stopsRoutesManager;
         }
@@ -25,13 +25,13 @@ namespace BusTripManagement.API.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<int> CreateStopRoute([FromBody] CreateStopRouteDTO dto)
+        public async Task<int> CreateRouteStops([FromBody] CreateStopRouteDTO dto)
         {
             return await _routeStopsManager.CreateStopRoute(dto.RouteId, dto.StopId, dto.Sequence);
         }
 
         [HttpPut("update")]
-        public async Task<int> UpdateStopRoute([FromBody] UpdateStopRouteDTO dto)
+        public async Task<int> UpdateRouteStops([FromBody] UpdateStopRouteDTO dto)
         {
             return await _routeStopsManager.UpdateStopRoute(dto.StopRouteId, dto.Sequence);
         }

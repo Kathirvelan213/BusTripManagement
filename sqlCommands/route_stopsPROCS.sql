@@ -57,4 +57,3 @@ BEGIN
 END
 GO
 
-usp_GetStopsForRoute @route_Id=1;

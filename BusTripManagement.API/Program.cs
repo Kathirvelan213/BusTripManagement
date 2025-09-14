@@ -36,8 +36,13 @@ builder.Services.AddScoped<RouteStopsData>();
 builder.Services.AddScoped<RouteCoordinateManager>();
 builder.Services.AddScoped<RouteCoordinateData>();
 
-builder.Services.AddScoped<IRouteTrackingManager,RouteTrackingManager>();
+builder.Services.AddSingleton<IRouteTrackingManager, RouteTrackingManager>();
 
+//builder.Services.AddSingleton<IRouteTrackingManager>(sp =>
+//{
+//    var routeStopsDataFactory = sp.GetRequiredService<IServiceProvider>();
+//    return new RouteTrackingManager(() => routeStopsDataFactory.GetRequiredService<RouteStopsData>());
+//}); // this is done since the props of the tracking manager have to be kept alive, thus singleton, but also a scoped object (routeStopData) cant live inside singleton. thus, we use factory to get the instance only whenever we want (inside the funcs of the singleton) which is destroyed after the scope of the fun ends. i think?!
 var app = builder.Build();
 
 

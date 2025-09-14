@@ -10,23 +10,30 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class LocationHubService extends HubService {
   static final hubUrl = AppConfig.hubUrl;
+  int tempRouteId = 1;
 
   LocationHubService() : super(hubUrl) {
     on("receiveAcknowledgement", confirmConnection);
     on("receiveLocationUpdate", updateLocation);
     on("stopReached", notifyStopReached);
   }
-  void confirmConnection(arguements) {
+  void confirmConnection(arguments) {
     print("connected");
-    JoinGroup(1);
+    JoinGroup(tempRouteId);
   }
 
-  void notifyStopReached(arguements) {
-    TripStatusService.instance.markStopReached(arguements[0]);
+  void notifyStopReached(arguments) {
+    print("stopReached: " + arguments[0]["stopName"]);
+    // TripStatusService.instance.markStopReached(arguments[0]);
   }
 
-  void updateLocation(arguements) {
-    LocationService.updateLocation(arguements[0], arguements[1]);
+  void updateLocation(args) {
+    if (args == null || args.isEmpty) return;
+    final routeId = args[0]["routeId"] as int;
+    final latitude = (args[0]["latitude"] as num).toDouble();
+    final longitude = (args[0]["longitude"] as num).toDouble();
+
+    LocationService.updateLocation(routeId, latitude, longitude);
   }
 
   void JoinGroup(routeId) {
