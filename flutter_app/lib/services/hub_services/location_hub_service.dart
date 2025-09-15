@@ -1,4 +1,5 @@
 import 'package:flutter_app/config/app_config.dart';
+import 'package:flutter_app/models/stop_status.dart';
 import 'package:flutter_app/services/hub_services/hub_service.dart';
 import 'package:flutter_app/services/location_services/location_service.dart';
 import 'package:flutter_app/services/location_services/trip_status_service.dart';
@@ -11,6 +12,7 @@ class LocationHubService extends HubService {
     on("receiveAcknowledgement", confirmConnection);
     on("receiveLocationUpdate", updateLocation);
     on("stopReached", notifyStopReached);
+    on("resetRouteStatus", TripStatusService.instance.resetRouteStatus);
   }
   void confirmConnection(arguments) {
     print("connected");

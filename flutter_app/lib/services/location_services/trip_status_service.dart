@@ -1,21 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/stop_status.dart';
 import 'package:flutter_app/services/api_consumer/api_client.dart';
 import 'package:flutter_app/services/api_consumer/route_stops_api.dart';
 
 /// Model to represent a stop and its status
-class StopStatus {
-  final int stopNumber;
-  final String stopName;
-  bool reached;
-  String? reachedTime;
-
-  StopStatus({
-    required this.stopNumber,
-    required this.stopName,
-    this.reached = false,
-    this.reachedTime,
-  });
-}
 
 /// Singleton StopStatusService
 class TripStatusService {
@@ -37,6 +25,7 @@ class TripStatusService {
       final data = await getRouteStops(routeId);
       final stops = data.map((rs) {
         return StopStatus(
+          routeId: rs.routeId,
           stopNumber: rs.sequence,
           stopName: rs.name,
         );
@@ -50,19 +39,24 @@ class TripStatusService {
 
   /// Mark a stop as reached
   void markStopReached(int stopNumber) {
-    print(stopNumber);
     final stops = List<StopStatus>.from(stopsNotifier.value);
     if (stopNumber > 0 && stopNumber <= stops.length) {
-      stops[stopNumber - 1].reached = true;
-      print('hi');
-      stopsNotifier.value = stops; // trigger UI update
+      final stop = stops[stopNumber - 1];
+      stops[stopNumber - 1] = StopStatus(
+        routeId: stop.routeId,
+        stopNumber: stop.stopNumber,
+        stopName: stop.stopName,
+        reached: true,
+        reachedTime: DateTime.now(),
+      );
+      stopsNotifier.value = stops;
     }
   }
 
-  /// Reset all stops (e.g., new trip)
-  void reset() {
+  void resetRouteStatus([List<Object?>? args]) {
     final stops = stopsNotifier.value.map((s) {
-      return StopStatus(stopNumber: s.stopNumber, stopName: s.stopName);
+      return StopStatus(
+          routeId: s.routeId, stopNumber: s.stopNumber, stopName: s.stopName);
     }).toList();
     stopsNotifier.value = stops;
   }

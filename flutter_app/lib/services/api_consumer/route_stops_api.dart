@@ -1,4 +1,4 @@
-import 'package:flutter_app/models/routeStop.dart';
+import 'package:flutter_app/models/route_stop.dart';
 
 import 'api_client.dart';
 

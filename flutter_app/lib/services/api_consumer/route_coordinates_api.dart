@@ -1,5 +1,5 @@
 import 'api_client.dart';
-import 'package:flutter_app/models/routeCoordinates.dart';
+import 'package:flutter_app/models/route_coordinates.dart';
 
 final ApiClient _apiClient = ApiClient();
 
