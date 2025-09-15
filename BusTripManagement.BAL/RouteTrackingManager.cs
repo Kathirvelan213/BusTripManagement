@@ -1,6 +1,7 @@
 ﻿using BusTripManagement.DAL;
 using BusTripManagement.Models;
 using Microsoft.Extensions.DependencyInjection;
+using System.Numerics;
 
 namespace BusTripManagement.BAL
 {
@@ -52,7 +53,8 @@ namespace BusTripManagement.BAL
                     RouteId = routeId,
                     StopNumber = nextStop.Sequence,
                     StopName = nextStop.Name,
-                    Time = DateTime.Now
+                    ReachedTime = DateTime.Now,
+                    Reached = true
                 };
             }
 
@@ -83,6 +85,7 @@ namespace BusTripManagement.BAL
         public int RouteId { get; set; }
         public int StopNumber { get; set; }
         public string StopName { get; set; } = string.Empty;
-        public DateTime Time { get; set; }
+        public DateTime ReachedTime { get; set; }
+        public bool Reached { get; set; } = false;
     }
 }

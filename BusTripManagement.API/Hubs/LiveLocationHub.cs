@@ -57,5 +57,11 @@ namespace BusTripManagement.API.Hubs
 
             await Clients.Group(groupName).SendAsync("stopReached", stopReachedResult);
         }
+        public async Task ResetRouteStatus(int routeId)
+        {
+            var groupName = $"route-{routeId}";
+
+            await Clients.Group(groupName).SendAsync("resetRouteStatus", null);
+        }
     }
 }

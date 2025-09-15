@@ -1,5 +1,7 @@
-﻿using BusTripManagement.BAL;
+﻿using BusTripManagement.API.Hubs;
+using BusTripManagement.BAL;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace BusTripManagement.API.Controllers
 {
@@ -9,18 +11,23 @@ namespace BusTripManagement.API.Controllers
     {
 
         private readonly IRouteTrackingManager _routeTrackingManager;
+        private readonly IHubContext<LiveLocationHub> _hubContext;
 
-        public RouteTrackingController(IRouteTrackingManager trackingManager)
+        public RouteTrackingController(IRouteTrackingManager trackingManager, IHubContext<LiveLocationHub> hubContext)
         {
             _routeTrackingManager = trackingManager;
+            _hubContext = hubContext;
         }
 
+        //temporary for testing
         [HttpPost("reset")]
-        public IActionResult Reset(int routeId)
+        public async Task<IActionResult> Reset(int routeId)
         {
             _routeTrackingManager.ResetRoute(routeId);
-            return Ok(new { message = $"Route {routeId} reset" });
 
+            var groupName = $"route-{routeId}";
+            await _hubContext.Clients.Group(groupName).SendAsync("resetRouteStatus", null);
+            return Ok(new { message = $"Route {routeId} reset" });
         }
     }
 
