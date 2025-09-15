@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/routeCoordinates.dart';
 import 'package:flutter_app/services/api_consumer/route_coordinates_api.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_app/services/location_services/location_service.dart';

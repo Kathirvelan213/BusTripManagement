@@ -1,6 +1,5 @@
 import 'api_client.dart';
 import 'package:flutter_app/models/routeCoordinates.dart';
-import 'package:latlong2/latlong.dart';
 
 final ApiClient _apiClient = ApiClient();
 

@@ -50,12 +50,11 @@ class TripStatusService {
 
   /// Mark a stop as reached
   void markStopReached(int stopNumber) {
+    print(stopNumber);
     final stops = List<StopStatus>.from(stopsNotifier.value);
-
-    if (stopNumber >= 0 && stopNumber < stops.length) {
-      stops[stopNumber].reached = true;
-      stops[stopNumber].reachedTime =
-          TimeOfDay.now().format(navigatorKey.currentContext!);
+    if (stopNumber > 0 && stopNumber <= stops.length) {
+      stops[stopNumber - 1].reached = true;
+      print('hi');
       stopsNotifier.value = stops; // trigger UI update
     }
   }

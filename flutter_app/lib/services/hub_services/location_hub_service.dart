@@ -1,12 +1,7 @@
-import 'dart:async';
-import 'dart:io';
-
-import 'package:flutter/material.dart';
 import 'package:flutter_app/config/app_config.dart';
 import 'package:flutter_app/services/hub_services/hub_service.dart';
 import 'package:flutter_app/services/location_services/location_service.dart';
 import 'package:flutter_app/services/location_services/trip_status_service.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class LocationHubService extends HubService {
   static final hubUrl = AppConfig.hubUrl;
@@ -24,7 +19,7 @@ class LocationHubService extends HubService {
 
   void notifyStopReached(arguments) {
     print("stopReached: " + arguments[0]["stopName"]);
-    // TripStatusService.instance.markStopReached(arguments[0]);
+    TripStatusService.instance.markStopReached(arguments[0]["stopNumber"]);
   }
 
   void updateLocation(args) {
