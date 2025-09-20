@@ -1,22 +1,25 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_app/config/app_config.dart';
-import 'package:flutter_app/models/stop_status.dart';
 import 'package:flutter_app/services/hub_services/hub_service.dart';
 import 'package:flutter_app/services/location_services/location_service.dart';
 import 'package:flutter_app/services/location_services/trip_status_service.dart';
+import 'package:signalr_netcore/signalr_client.dart';
 
 class LocationHubService extends HubService {
   static final hubUrl = AppConfig.hubUrl;
-  int tempRouteId = 1;
-
-  LocationHubService() : super(hubUrl) {
+  int? _currentRouteId;
+  static final LocationHubService _instance = LocationHubService._internal();
+  factory LocationHubService() => _instance;
+  LocationHubService._internal() : super(hubUrl) {
     on("receiveAcknowledgement", confirmConnection);
     on("receiveLocationUpdate", updateLocation);
     on("stopReached", notifyStopReached);
     on("resetRouteStatus", TripStatusService.instance.resetRouteStatus);
   }
+
   void confirmConnection(arguments) {
     print("connected");
-    JoinGroup(tempRouteId);
+    // Don't auto-join any group - wait for route selection
   }
 
   void notifyStopReached(arguments) {
@@ -33,7 +36,33 @@ class LocationHubService extends HubService {
     LocationService.updateLocation(routeId, latitude, longitude);
   }
 
-  void JoinGroup(routeId) {
+  void joinRouteGroup(int routeId) {
+    if (hubConnection.state != HubConnectionState.Connected) {
+      print("Cannot join route group, hub not connected");
+      return;
+    }
+    if (_currentRouteId != null && _currentRouteId != routeId) {
+      // Leave current group first
+      leaveRouteGroup();
+    }
+    _currentRouteId = routeId;
     invoke('JoinRouteGroup', args: [routeId]);
+    print("Joined route group: $routeId");
   }
+
+  void leaveRouteGroup() {
+    final routeId = _currentRouteId;
+    if (routeId == null ||
+        hubConnection.state != HubConnectionState.Connected) {
+      print("No route group to leave or hub not connected");
+      return;
+    }
+    if (_currentRouteId != null) {
+      invoke('LeaveRouteGroup', args: [_currentRouteId!]);
+      print("Left route group: $_currentRouteId");
+      _currentRouteId = null;
+    }
+  }
+
+  int? get currentRouteId => _currentRouteId;
 }

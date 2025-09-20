@@ -1,12 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/components/pages/tracking/widgets/stops/stops_panel.dart';
 import 'package:flutter_app/models/bus_route.dart';
+import 'package:flutter_app/services/hub_services/location_hub_service.dart';
 import './widgets/map_tile.dart';
 
-class TrackingPage extends StatelessWidget {
+class TrackingPage extends StatefulWidget {
   final BusRoute? selectedRoute;
 
   const TrackingPage({super.key, this.selectedRoute});
+
+  @override
+  State<TrackingPage> createState() => _TrackingPageState();
+}
+
+class _TrackingPageState extends State<TrackingPage> {
+  final LocationHubService _hubService = LocationHubService();
+
+  @override
+  void dispose() {
+    // Leave the route group when navigating back
+    _hubService.leaveRouteGroup();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,24 +29,25 @@ class TrackingPage extends StatelessWidget {
     double mapHeight = screenHeight * 0.9; // 60% of screen
     return Scaffold(
       appBar: AppBar(
-        title: Text(selectedRoute?.name ?? "Tracking"),
+        title: Text(widget.selectedRoute?.name ?? "Tracking"),
         centerTitle: true,
         actions: [
-          if (selectedRoute != null)
+          if (widget.selectedRoute != null)
             IconButton(
               icon: const Icon(Icons.info_outline),
               onPressed: () {
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: Text(selectedRoute!.name),
+                    title: Text(widget.selectedRoute!.name),
                     content: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Route ID: ${selectedRoute!.routeId}'),
+                        Text('Route ID: ${widget.selectedRoute!.routeId}'),
                         const SizedBox(height: 8),
-                        Text('Destination: ${selectedRoute!.destination}'),
+                        Text(
+                            'Destination: ${widget.selectedRoute!.destination}'),
                       ],
                     ),
                     actions: [
@@ -56,7 +72,7 @@ class TrackingPage extends StatelessWidget {
                 height: mapHeight,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),
-                  child: MapTile(selectedRoute: selectedRoute),
+                  child: MapTile(selectedRoute: widget.selectedRoute),
                 ),
               ),
 

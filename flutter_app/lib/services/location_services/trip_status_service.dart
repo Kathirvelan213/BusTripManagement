@@ -17,8 +17,6 @@ class TripStatusService {
   final ValueNotifier<List<StopStatus>> stopsNotifier =
       ValueNotifier<List<StopStatus>>([]);
 
-  final ApiClient _apiClient = ApiClient();
-
   /// Initialize stops from API
   Future<void> initializeStops(int routeId) async {
     try {

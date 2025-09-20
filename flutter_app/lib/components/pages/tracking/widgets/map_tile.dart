@@ -47,20 +47,17 @@ class _MapTileState extends State<MapTile> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.selectedRoute?.routeId != widget.selectedRoute?.routeId) {
       _loadRouteData();
-      // No need to resubscribe - filtering handles route changes automatically
+      // No need to resubscribe - SignalR group management handles route changes
     }
   }
 
   void _subscribeToLocationUpdates() {
     _locationSubscription?.cancel(); // Cancel previous subscription
 
-    _locationSubscription = LocationService.stream.listen((locationData) {
-      // Only update if this location is for the current route
-      final currentRouteId = widget.selectedRoute?.routeId ?? 1;
-      if (locationData.routeId == currentRouteId && mounted) {
+    _locationSubscription = LocationService.stream.listen((location) {
+      if (mounted) {
         setState(() {
-          _currentLocation =
-              LatLng(locationData.latitude, locationData.longitude);
+          _currentLocation = location;
         });
       }
     });

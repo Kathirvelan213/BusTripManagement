@@ -38,6 +38,9 @@ builder.Services.AddScoped<RouteCoordinateData>();
 
 builder.Services.AddSingleton<IRouteTrackingManager, RouteTrackingManager>();
 
+builder.Logging.AddFilter("Microsoft.AspNetCore.SignalR", LogLevel.Trace);
+builder.Logging.AddConsole();
+
 //builder.Services.AddSingleton<IRouteTrackingManager>(sp =>
 //{
 //    var routeStopsDataFactory = sp.GetRequiredService<IServiceProvider>();

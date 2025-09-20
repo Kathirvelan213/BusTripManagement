@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/bus_route.dart';
 import 'package:flutter_app/services/api_consumer/bus_routes_api.dart';
+import 'package:flutter_app/services/hub_services/location_hub_service.dart';
+import 'package:flutter_app/services/location_services/trip_status_service.dart';
 import 'package:flutter_app/components/pages/tracking/tracking_page.dart';
 
 class RouteSelectionPage extends StatefulWidget {
@@ -14,6 +16,7 @@ class _RouteSelectionPageState extends State<RouteSelectionPage> {
   List<BusRoute> routes = [];
   bool isLoading = true;
   String? error;
+  final LocationHubService _hubService = LocationHubService();
 
   @override
   void initState() {
@@ -41,7 +44,11 @@ class _RouteSelectionPageState extends State<RouteSelectionPage> {
     }
   }
 
-  void _navigateToTracking(BusRoute route) {
+  void _navigateToTracking(BusRoute route) async {
+    // Join the route group and initialize stops
+    _hubService.joinRouteGroup(route.routeId);
+    TripStatusService.instance.initializeStops(route.routeId);
+
     Navigator.push(
       context,
       MaterialPageRoute(

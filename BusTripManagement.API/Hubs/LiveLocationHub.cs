@@ -63,5 +63,10 @@ namespace BusTripManagement.API.Hubs
 
             await Clients.Group(groupName).SendAsync("resetRouteStatus", null);
         }
+        public override async Task OnDisconnectedAsync(Exception? exception)
+        {
+            Console.WriteLine($"Client disconnected: {Context.ConnectionId}, Exception: {exception}");
+            await base.OnDisconnectedAsync(exception);
+        }
     }
 }

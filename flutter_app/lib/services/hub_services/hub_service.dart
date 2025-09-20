@@ -1,58 +1,64 @@
 import 'package:signalr_netcore/signalr_client.dart';
+import 'package:logging/logging.dart';
+import 'dart:io';
 
 class HubService {
-  late HubConnection _hubConnection;
+  late HubConnection hubConnection;
 
   HubService(String hubUrl) {
-    _hubConnection = HubConnectionBuilder()
+    Logger.root.level = Level.ALL; // Show all log levels
+    Logger.root.onRecord.listen((record) {
+      print('${record.level.name}: ${record.loggerName}: ${record.message}');
+    });
+    hubConnection = HubConnectionBuilder()
         .withUrl(hubUrl,
             options: HttpConnectionOptions(
               transport: HttpTransportType.WebSockets,
             ))
         .withAutomaticReconnect(
-      retryDelays: [0, 2000, 5000, 10000], // in milliseconds
+      retryDelays: [0, 2000, 5000, 10000],
     ).build();
 
-    _hubConnection.serverTimeoutInMilliseconds = 30000; // 30s
-    _hubConnection.keepAliveIntervalInMilliseconds = 15000;
+    hubConnection.serverTimeoutInMilliseconds = 30000; // 30s
+    hubConnection.keepAliveIntervalInMilliseconds = 15000;
 
-    _hubConnection.onreconnecting(({Exception? error}) {
+    hubConnection.onreconnecting(({Exception? error}) {
       print('Connection lost. Reconnecting... Error: $error');
     });
 
-    _hubConnection.onreconnected(({String? connectionId}) {
+    hubConnection.onreconnected(({String? connectionId}) {
       print('Reconnected. ConnectionId: $connectionId');
     });
 
-    _hubConnection.onclose(({Exception? error}) {
+    hubConnection.onclose(({Exception? error}) {
       print('Connection closed. Error: $error');
     });
   }
 
   Future<void> start() async {
-    if (_hubConnection.state != HubConnectionState.Disconnected) {
-      await _hubConnection.stop();
+    if (hubConnection.state != HubConnectionState.Disconnected) {
+      await hubConnection.stop();
     }
-    await _hubConnection.start();
-    print('Connected to hub at $_hubConnection');
+    await hubConnection.start();
+    print('Connected to hub at $hubConnection');
   }
 
   Future<void> stop() async {
-    await _hubConnection.stop();
+    await hubConnection.stop();
     print('Disconnected from hub');
   }
 
   void on(String eventName, MethodInvocationFunc callback) {
-    _hubConnection.on(eventName, callback);
+    hubConnection.on(eventName, callback);
   }
 
   void off(String eventName) {
-    _hubConnection.off(eventName);
+    hubConnection.off(eventName);
   }
 
   Future<Object?> invoke(String methodName, {List<Object>? args}) async {
     try {
-      final result = await _hubConnection.invoke(methodName, args: args);
+      final result = await hubConnection.invoke(methodName, args: args);
       return result;
     } catch (e) {
       print("Invoke error [$methodName]: $e");
@@ -60,5 +66,5 @@ class HubService {
     }
   }
 
-  bool get isConnected => _hubConnection.state == HubConnectionState.Connected;
+  bool get isConnected => hubConnection.state == HubConnectionState.Connected;
 }
