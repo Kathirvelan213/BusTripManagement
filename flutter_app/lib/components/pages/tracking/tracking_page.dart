@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/components/pages/tracking/widgets/stops/stops_panel.dart';
+import 'package:flutter_app/models/bus_route.dart';
 import './widgets/map_tile.dart';
 
 class TrackingPage extends StatelessWidget {
-  const TrackingPage({super.key});
+  final BusRoute? selectedRoute;
+
+  const TrackingPage({super.key, this.selectedRoute});
 
   @override
   Widget build(BuildContext context) {
@@ -11,8 +14,37 @@ class TrackingPage extends StatelessWidget {
     double mapHeight = screenHeight * 0.9; // 60% of screen
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Tracking"),
+        title: Text(selectedRoute?.name ?? "Tracking"),
         centerTitle: true,
+        actions: [
+          if (selectedRoute != null)
+            IconButton(
+              icon: const Icon(Icons.info_outline),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text(selectedRoute!.name),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Route ID: ${selectedRoute!.routeId}'),
+                        const SizedBox(height: 8),
+                        Text('Destination: ${selectedRoute!.destination}'),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Close'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -24,7 +56,7 @@ class TrackingPage extends StatelessWidget {
                 height: mapHeight,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),
-                  child: MapTile(),
+                  child: MapTile(selectedRoute: selectedRoute),
                 ),
               ),
 

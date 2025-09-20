@@ -1,12 +1,16 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/services/api_consumer/route_coordinates_api.dart';
+import 'package:flutter_app/models/bus_route.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_app/services/location_services/location_service.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 class MapTile extends StatefulWidget {
-  const MapTile({super.key});
+  final BusRoute? selectedRoute;
+
+  const MapTile({super.key, this.selectedRoute});
 
   @override
   State<MapTile> createState() => _MapTileState();
@@ -15,6 +19,7 @@ class MapTile extends StatefulWidget {
 class _MapTileState extends State<MapTile> {
   final LocationService locationService = LocationService();
   late LatLng _currentLocation;
+  StreamSubscription? _locationSubscription;
 
   final MapController _mapController = MapController();
 
@@ -26,19 +31,49 @@ class _MapTileState extends State<MapTile> {
 
     _currentLocation = LatLng(0, 0);
 
-    getRouteSegments(1).then((segments) {
-      setState(() {
-        routePoints = segments
-            .map((seg) => seg.map((c) => LatLng(c.lat, c.lng)).toList())
-            .toList();
-      });
-    });
+    _loadRouteData();
 
-    locationService.stream.listen((locationData) {
-      setState(() {
-        _currentLocation =
-            LatLng(locationData.latitude, locationData.longitude);
-      });
+    _locationSubscription = locationService.stream.listen((locationData) {
+      if (mounted) {
+        setState(() {
+          _currentLocation =
+              LatLng(locationData.latitude, locationData.longitude);
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _locationSubscription?.cancel();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(MapTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selectedRoute?.routeId != widget.selectedRoute?.routeId) {
+      _loadRouteData();
+    }
+  }
+
+  void _loadRouteData() {
+    final routeId = widget.selectedRoute?.routeId ?? 1; // fallback to route 1
+
+    getRouteSegments(routeId).then((segments) {
+      if (mounted) {
+        setState(() {
+          routePoints = segments
+              .map((seg) => seg.map((c) => LatLng(c.lat, c.lng)).toList())
+              .toList();
+        });
+      }
+    }).catchError((error) {
+      if (mounted) {
+        setState(() {
+          routePoints = []; // Clear route points on error
+        });
+      }
     });
   }
 

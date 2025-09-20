@@ -38,7 +38,6 @@ builder.Services.AddScoped<RouteCoordinateData>();
 
 builder.Services.AddSingleton<IRouteTrackingManager, RouteTrackingManager>();
 
-builder.Services.AddScoped<LiveLocationHub>();
 //builder.Services.AddSingleton<IRouteTrackingManager>(sp =>
 //{
 //    var routeStopsDataFactory = sp.GetRequiredService<IServiceProvider>();
