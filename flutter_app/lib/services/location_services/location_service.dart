@@ -1,11 +1,26 @@
 import 'dart:async';
-import 'package:syncfusion_flutter_maps/maps.dart';
+
+class LocationData {
+  final int routeId;
+  final double latitude;
+  final double longitude;
+
+  LocationData({
+    required this.routeId,
+    required this.latitude,
+    required this.longitude,
+  });
+}
 
 class LocationService {
-  static final _streamController = StreamController<MapLatLng>.broadcast();
-  Stream<MapLatLng> get stream => _streamController.stream;
+  static final _streamController = StreamController<LocationData>.broadcast();
+  static Stream<LocationData> get stream => _streamController.stream;
 
   static void updateLocation(int routeId, double latitude, double longitude) {
-    _streamController.add(MapLatLng(latitude, longitude));
+    _streamController.add(LocationData(
+      routeId: routeId,
+      latitude: latitude,
+      longitude: longitude,
+    ));
   }
 }
