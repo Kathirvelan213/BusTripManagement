@@ -4,7 +4,7 @@ import 'package:flutter_app/models/route_coordinates.dart';
 final ApiClient _apiClient = ApiClient();
 
 Future<List<List<RouteCoordinate>>> getRouteSegments(int routeId) async {
-  final data = await _apiClient.get("/RouteCoordinate/segments/$routeId");
+  final data = await _apiClient.get("/api/RouteCoordinate/segments/$routeId");
   // JSON key is "Segments" (capital S)
   final List<dynamic> segmentsJson = data["segments"];
 
