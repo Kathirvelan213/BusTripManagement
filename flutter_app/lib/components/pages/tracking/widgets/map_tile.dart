@@ -1,3 +1,4 @@
+import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/services/api_consumer/route_coordinates_api.dart';
@@ -16,12 +17,12 @@ class MapTile extends StatefulWidget {
   State<MapTile> createState() => _MapTileState();
 }
 
-class _MapTileState extends State<MapTile> {
+class _MapTileState extends State<MapTile> with TickerProviderStateMixin {
   final LocationService locationService = LocationService();
   late LatLng _currentLocation;
   StreamSubscription? _locationSubscription;
 
-  final MapController _mapController = MapController();
+  late final AnimatedMapController _animatedMapController;
 
   List<List<LatLng>> routePoints = [];
 
@@ -31,8 +32,10 @@ class _MapTileState extends State<MapTile> {
 
     _currentLocation = LatLng(0, 0);
 
-    _loadRouteData();
+    // initialize animated map controller
+    _animatedMapController = AnimatedMapController(vsync: this);
 
+    _loadRouteData();
     _subscribeToLocationUpdates();
   }
 
@@ -47,12 +50,11 @@ class _MapTileState extends State<MapTile> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.selectedRoute?.routeId != widget.selectedRoute?.routeId) {
       _loadRouteData();
-      // No need to resubscribe - SignalR group management handles route changes
     }
   }
 
   void _subscribeToLocationUpdates() {
-    _locationSubscription?.cancel(); // Cancel previous subscription
+    _locationSubscription?.cancel();
 
     _locationSubscription = LocationService.stream.listen((location) {
       if (mounted) {
@@ -64,7 +66,7 @@ class _MapTileState extends State<MapTile> {
   }
 
   void _loadRouteData() {
-    final routeId = widget.selectedRoute?.routeId ?? 1; // fallback to route 1
+    final routeId = widget.selectedRoute?.routeId ?? 1;
 
     getRouteSegments(routeId).then((segments) {
       if (mounted) {
@@ -76,64 +78,85 @@ class _MapTileState extends State<MapTile> {
       }
     }).catchError((error) {
       if (mounted) {
-        setState(() {
-          routePoints = []; // Clear route points on error
-        });
+        setState(() => routePoints = []);
       }
     });
   }
 
+  void _centerOnUser() {
+    _animatedMapController.animateTo(
+      dest: _currentLocation,
+      zoom: 16,
+      curve: Curves.easeInOut,
+
+      // duration: const Duration(milliseconds: 600),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return FlutterMap(
-      mapController: _mapController,
-      options: MapOptions(
-        initialCenter: LatLng(27.1751, 78.0421),
-        initialZoom: 5,
-        minZoom: 2,
-        maxZoom: 20,
-        initialRotation: 0,
-        interactionOptions: InteractionOptions(
-          flags: InteractiveFlag.drag |
-              InteractiveFlag.pinchZoom |
-              InteractiveFlag.doubleTapZoom |
-              InteractiveFlag.scrollWheelZoom,
-        ),
-        // clamp to valid world bounds (no white borders)
-        cameraConstraint: CameraConstraint.contain(
-          bounds: LatLngBounds(
-            LatLng(-85.0, -180.0),
-            LatLng(85.0, 180.0),
-          ),
-        ),
-      ),
+    return Stack(
       children: [
-        TileLayer(
-          urlTemplate: dotenv.env['MAP_TILE_URL']!,
-          userAgentPackageName: 'com.example.flutter_app',
-          panBuffer: 2, // optional, smoother wrapping
-        ),
-        PolylineLayer(polylines: [
-          for (final route in routePoints) ...[
-            Polyline(points: route, strokeWidth: 8, color: Colors.white),
-            Polyline(
-                points: route, strokeWidth: 4, color: Colors.blue.shade500),
-          ],
-        ]),
-        // Marker layer (your current location)
-        MarkerLayer(
-          markers: [
-            Marker(
-              point: _currentLocation,
-              width: 40,
-              height: 40,
-              child: Icon(
-                Icons.location_on,
-                color: Colors.green.shade900,
-                size: 40,
+        FlutterMap(
+          mapController: _animatedMapController.mapController,
+          options: MapOptions(
+            initialCenter: LatLng(27.1751, 78.0421),
+            initialZoom: 5,
+            minZoom: 2,
+            maxZoom: 20,
+            initialRotation: 0,
+            interactionOptions: InteractionOptions(
+              flags: InteractiveFlag.drag |
+                  InteractiveFlag.pinchZoom |
+                  InteractiveFlag.doubleTapZoom |
+                  InteractiveFlag.scrollWheelZoom,
+            ),
+            cameraConstraint: CameraConstraint.contain(
+              bounds: LatLngBounds(
+                LatLng(-85, -180),
+                LatLng(85, 180),
               ),
             ),
+          ),
+          children: [
+            TileLayer(
+              urlTemplate: dotenv.env['MAP_TILE_URL']!,
+              userAgentPackageName: 'com.example.flutter_app',
+              panBuffer: 2,
+            ),
+            PolylineLayer(
+              polylines: [
+                for (final route in routePoints)
+                  Polyline(
+                    points: route,
+                    strokeWidth: 2,
+                    color: Colors.blue.shade500,
+                  ),
+              ],
+            ),
+            MarkerLayer(markers: [
+              Marker(
+                point: _currentLocation,
+                width: 40,
+                height: 40,
+                child: Icon(
+                  Icons.location_on,
+                  color: Colors.green.shade900,
+                  size: 40,
+                ),
+              ),
+            ]),
           ],
+        ),
+        Positioned(
+          bottom: 20,
+          right: 20,
+          child: FloatingActionButton(
+            backgroundColor: Colors.white,
+            foregroundColor: Colors.blue.shade700,
+            onPressed: _centerOnUser,
+            child: const Icon(Icons.my_location),
+          ),
         ),
       ],
     );

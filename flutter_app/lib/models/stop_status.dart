@@ -5,6 +5,7 @@ class StopStatus {
   final int stopNumber;
   final String stopName;
   bool reached;
+  bool passed;
   DateTime? reachedTime;
 
   StopStatus({
@@ -12,6 +13,7 @@ class StopStatus {
     required this.stopNumber,
     required this.stopName,
     this.reached = false,
+    this.passed = false,
     this.reachedTime,
   });
 
@@ -21,6 +23,7 @@ class StopStatus {
       stopNumber: json['stopNumber'] as int,
       stopName: json['stopName'] as String,
       reached: json['reached'] as bool? ?? false,
+      passed: false,
       reachedTime: json['reachedTime'] != null
           ? DateTime.parse(json['reachedTime'])
           : null,

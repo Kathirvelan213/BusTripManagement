@@ -9,9 +9,10 @@ import 'components/pages/login/login_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   // Load .env
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: ".env.production");
+  final LocationHubService locationHubService = LocationHubService();
+  await locationHubService.start();
 
   // Optionally allow self-signed certs in dev: set ALLOW_INSECURE_SSL=true in .env.
   if ((dotenv.env['ALLOW_INSECURE_SSL'] ?? '').toLowerCase() == 'true') {
@@ -41,8 +42,8 @@ class _MainAppState extends State<MainApp> {
   final AuthService _auth = AuthService();
   final LocationHubService _hub = LocationHubService();
 
-  bool _checking = true;
-  bool _loggedIn = false;
+  bool _checking = false;
+  bool _loggedIn = true;
 
   @override
   void initState() {
@@ -69,7 +70,10 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     if (_checking) {
-      return const MaterialApp(
+      return MaterialApp(
+        theme: ThemeData.light().copyWith(
+          scaffoldBackgroundColor: Colors.white,
+        ),
         debugShowCheckedModeBanner: false,
         home: Scaffold(
           body: Center(child: CircularProgressIndicator()),
@@ -78,6 +82,31 @@ class _MainAppState extends State<MainApp> {
     }
 
     return MaterialApp(
+      // theme: ThemeData(
+      //   colorScheme: ColorScheme.fromSeed(
+      //     seedColor: Colors.blue,
+      //   ).copyWith(
+      //     surface: Colors.white,
+      //     surfaceTint: Colors.transparent,
+      //     surfaceBright: Colors.white,
+      //     surfaceContainerHighest: Colors.white,
+      //     surfaceContainerLow: Colors.white,
+      //   ),
+      //   scaffoldBackgroundColor: Colors.white,
+      //   cardColor: Colors.white,
+      // ),
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        colorScheme: const ColorScheme.dark(
+          primary: Colors.blue,
+          surface: Color(0xFF121212), // proper dark surface
+          surfaceTint: Colors.transparent, // NO blue/purple tint
+          onSurface: Colors.white,
+        ),
+        scaffoldBackgroundColor: const Color(0xFF000000),
+        cardColor: const Color(0xFF1E1E1E), // dark card color
+      ),
+      themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
       home: _loggedIn ? const RouteSelectionPage() : const LoginPage(),
       routes: {

@@ -21,7 +21,7 @@ namespace BusTripManagement.API.Controllers
 
         //temporary for testing
         [HttpPost("reset")]
-        public async Task<IActionResult> Reset(int routeId)
+        public async Task<IActionResult> Reset([FromBody] int routeId)
         {
             _routeTrackingManager.ResetRoute(routeId);
 

@@ -39,6 +39,30 @@ class TripStatusService {
   void markStopReached(int stopNumber) {
     final stops = List<StopStatus>.from(stopsNotifier.value);
     if (stopNumber > 0 && stopNumber <= stops.length) {
+      for (int i = stopNumber - 2; i >= 0; i--) {
+        if (!stops[i].reached) {
+          stops[i] = StopStatus(
+            routeId: stops[i].routeId,
+            stopNumber: stops[i].stopNumber,
+            stopName: stops[i].stopName,
+            reached: true,
+            passed: true,
+            reachedTime: DateTime.now(),
+          );
+        } else {
+          break;
+        }
+      }
+      if (stopNumber - 2 >= 0) {
+        stops[stopNumber - 2] = StopStatus(
+          routeId: stops[stopNumber - 2].routeId,
+          stopNumber: stops[stopNumber - 2].stopNumber,
+          stopName: stops[stopNumber - 2].stopName,
+          reached: true,
+          passed: true,
+          reachedTime: DateTime.now(),
+        );
+      }
       final stop = stops[stopNumber - 1];
       stops[stopNumber - 1] = StopStatus(
         routeId: stop.routeId,

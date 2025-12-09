@@ -7,6 +7,6 @@ final ApiClient _apiClient = ApiClient();
 Future<List<RouteStop>> getRouteStops(int routeId) async {
   final response = await _apiClient.get("/api/RouteStops/for-route/$routeId");
   final List<dynamic> stopsJson = response as List<dynamic>;
-
+  print('Fetched ${stopsJson.length} stops for route $routeId');
   return stopsJson.map((json) => RouteStop.fromJson(json)).toList();
 }
