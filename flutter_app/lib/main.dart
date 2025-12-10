@@ -12,19 +12,19 @@ import 'components/pages/login/login_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Load .env
   await dotenv.load(fileName: ".env");
-  
+
   // IMPORTANT: Set up SSL override BEFORE any network calls
   if ((dotenv.env['ALLOW_INSECURE_SSL'] ?? '').toLowerCase() == 'true') {
     HttpOverrides.global = _DevHttpOverrides();
   }
-  
+
   // Initialize services
   await ReminderService.instance.initialize();
   await NotificationService.instance.initialize();
-  
+
   // Start SignalR hub AFTER SSL override is configured
   final LocationHubService locationHubService = LocationHubService();
   await locationHubService.start();

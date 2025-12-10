@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/stop_status.dart';
-import 'package:flutter_app/services/api_consumer/api_client.dart';
+import 'package:flutter_app/models/route_status_response.dart';
 import 'package:flutter_app/services/api_consumer/route_stops_api.dart';
+import 'package:flutter_app/services/api_consumer/route_tracking_api.dart';
 import 'package:flutter_app/services/location_services/route_stops_service.dart';
 import 'package:flutter_app/services/notification_services/reminder_service.dart';
 import 'package:flutter_app/services/notification_services/notification_service.dart';
@@ -28,13 +29,49 @@ class TripStatusService {
       // Populate RouteStopsService with stop locations
       RouteStopsService.instance.setRouteStops(data);
 
+      // Fetch current route status from server
+      final routeStatus = await getRouteStatus(routeId);
+
       final stops = data.map((rs) {
+        // Check if this stop has been reached based on server status
+        bool isReached = false;
+        bool isPassed = false;
+        DateTime? reachedTime;
+
+        if (routeStatus != null) {
+          // Find if this stop is in the reached stops list
+          final reachedStop = routeStatus.reachedStops.firstWhere(
+            (s) => s.stopNumber == rs.sequence,
+            orElse: () => StopStatusInfo(
+              stopNumber: -1,
+              stopName: '',
+              reachedTime: DateTime.now(),
+            ),
+          );
+
+          if (reachedStop.stopNumber != -1) {
+            isReached = true;
+            reachedTime = reachedStop.reachedTime;
+
+            // Mark as passed if it's not the most recently reached stop
+            if (routeStatus.reachedStops.isNotEmpty &&
+                reachedStop.stopNumber !=
+                    routeStatus.reachedStops.last.stopNumber) {
+              isPassed = true;
+            }
+          }
+        }
+
         return StopStatus(
           routeId: rs.routeId,
           stopNumber: rs.sequence,
           stopName: rs.name,
+          reached: isReached,
+          passed: isPassed,
+          reachedTime: reachedTime,
         );
       }).toList();
+
       stopsNotifier.value = stops;
     } catch (e) {
       debugPrint("Failed to load stops: $e");

@@ -1,5 +1,6 @@
 ﻿using BusTripManagement.API.Hubs;
 using BusTripManagement.BAL;
+using BusTripManagement.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 
@@ -17,6 +18,17 @@ namespace BusTripManagement.API.Controllers
         {
             _routeTrackingManager = trackingManager;
             _hubContext = hubContext;
+        }
+
+        [HttpGet("status/{routeId}")]
+        public async Task<ActionResult<RouteStatusResponse>> GetStatus(int routeId)
+        {
+            var status = await _routeTrackingManager.GetRouteStatus(routeId);
+            if (status == null)
+            {
+                return NotFound(new { message = $"No tracking status found for route {routeId}" });
+            }
+            return Ok(status);
         }
 
         //temporary for testing

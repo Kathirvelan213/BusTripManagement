@@ -9,6 +9,7 @@ namespace BusTripManagement.BAL
     {
         Task<StopReachedResult?> ProcessLocation(int routeId, double lat, double lng);
         void ResetRoute(int routeId);
+        Task<RouteStatusResponse?> GetRouteStatus(int routeId);
     }
 
     public class RouteTrackingManager : IRouteTrackingManager
@@ -65,6 +66,53 @@ namespace BusTripManagement.BAL
         {
             _nextStopIndex.Remove(routeId);
             _routeStops.Remove(routeId);
+        }
+
+        public async Task<RouteStatusResponse?> GetRouteStatus(int routeId)
+        {
+            // Create a new scope to safely resolve scoped services
+            using var scope = _serviceProvider.CreateScope();
+            var _routeStopsData = scope.ServiceProvider.GetRequiredService<RouteStopsData>();
+            
+            // Load stops if not already cached
+            if (!_routeStops.ContainsKey(routeId))
+            {
+                var routeStops = await _routeStopsData.GetStopsForRoute(routeId);
+                _routeStops[routeId] = routeStops.ToList();
+            }
+
+            if (!_nextStopIndex.ContainsKey(routeId))
+            {
+                // Route hasn't started tracking yet
+                return new RouteStatusResponse
+                {
+                    RouteId = routeId,
+                    NextStopIndex = 0,
+                    ReachedStops = new List<StopStatusInfo>()
+                };
+            }
+
+            var stops = _routeStops[routeId];
+            var nextIndex = _nextStopIndex[routeId];
+            var reachedStops = new List<StopStatusInfo>();
+
+            // All stops before nextIndex have been reached
+            for (int i = 0; i < nextIndex && i < stops.Count; i++)
+            {
+                reachedStops.Add(new StopStatusInfo
+                {
+                    StopNumber = stops[i].Sequence,
+                    StopName = stops[i].Name,
+                    ReachedTime = DateTime.Now // Note: We don't store actual times, using current time as placeholder
+                });
+            }
+
+            return new RouteStatusResponse
+            {
+                RouteId = routeId,
+                NextStopIndex = nextIndex,
+                ReachedStops = reachedStops
+            };
         }
 
         private double DistanceInMeters(double lat1, double lon1, double lat2, double lon2)
