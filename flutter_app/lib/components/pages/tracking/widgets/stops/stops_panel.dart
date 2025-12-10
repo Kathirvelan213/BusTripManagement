@@ -1,10 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:flutter_app/models/stop_status.dart';
+import 'package:flutter_app/models/bus_route.dart';
 import 'package:flutter_app/services/location_services/trip_status_service.dart';
+import 'package:latlong2/latlong.dart';
 import 'stop_record.dart';
 
 class StopsPanel extends StatelessWidget {
-  const StopsPanel({super.key});
+  final AnimatedMapController animatedMapController;
+  final Function(LatLng) centerOnLocation;
+  final BusRoute? route;
+
+  const StopsPanel({
+    super.key,
+    required this.animatedMapController,
+    required this.centerOnLocation,
+    this.route,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,11 +34,10 @@ class StopsPanel extends StatelessWidget {
             child: Column(
               children: stops.map((stop) {
                 return StopWidget(
-                  stopNumber: stop.stopNumber,
-                  stopName: stop.stopName,
-                  time: stop.formattedReachedTime,
-                  reached: stop.reached,
-                  passed: stop.passed,
+                  stop: stop,
+                  animatedMapController: animatedMapController,
+                  centerOnLocation: centerOnLocation,
+                  route: route,
                 );
               }).toList(),
             ),

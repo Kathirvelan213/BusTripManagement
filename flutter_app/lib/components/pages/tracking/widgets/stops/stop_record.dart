@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/stop_status.dart';
+import 'package:flutter_app/models/bus_route.dart';
+import 'package:flutter_map_animations/flutter_map_animations.dart';
+import 'package:flutter_app/services/location_services/route_stops_service.dart';
+import 'package:flutter_app/services/notification_services/reminder_service.dart';
+import 'package:latlong2/latlong.dart';
 
 class StopWidget extends StatelessWidget {
-  final int stopNumber;
-  final String stopName;
-  final String time;
-  final bool reached;
-  final bool passed;
+  final StopStatus stop;
+  final AnimatedMapController animatedMapController;
+  final Function(LatLng) centerOnLocation;
+  final BusRoute? route;
 
   const StopWidget({
     super.key,
-    required this.stopNumber,
-    required this.stopName,
-    required this.time,
-    this.reached = false,
-    this.passed = false,
+    required this.stop,
+    required this.animatedMapController,
+    required this.centerOnLocation,
+    this.route,
   });
 
   @override
@@ -30,17 +34,17 @@ class StopWidget extends StatelessWidget {
                     margin: const EdgeInsets.symmetric(horizontal: 30),
                     height: 30,
                     width: 2,
-                    color: reached ? Colors.blue : Colors.grey.shade300,
+                    color: stop.reached ? Colors.blue : Colors.grey.shade300,
                   ),
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 30),
                     height: 30,
                     width: 2,
-                    color: passed ? Colors.blue : Colors.grey.shade300,
+                    color: stop.passed ? Colors.blue : Colors.grey.shade300,
                   ),
                 ],
               ),
-              if (reached && !passed)
+              if (stop.reached && !stop.passed)
                 Container(
                   width: 20,
                   height: 20,
@@ -67,54 +71,109 @@ class StopWidget extends StatelessWidget {
                 ),
               ],
             ),
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.blue.shade300,
-                elevation: 0,
-                // shadowColor: Colors.blue.shade100,
-                padding: EdgeInsets.zero,
-                alignment: Alignment.centerLeft,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
-                ),
-              ),
-              child: Container(
-                // shape: RoundedRectangleBorder(
-                //   borderRadius: BorderRadius.circular(0),
-                // ),
+            child: InkWell(
+              onTap: () {
+                final location = RouteStopsService.instance
+                    .getStopLocationBySequence(stop.stopNumber);
+                if (location != null) {
+                  centerOnLocation(location);
+                }
+              },
+              onLongPress: () async {
+                if (route != null) {
+                  final hasReminder =
+                      ReminderService.instance.hasActiveReminder(
+                    route!.routeId,
+                    stop.stopNumber,
+                  );
 
+                  if (hasReminder) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content:
+                            Text('Reminder already set for ${stop.stopName}'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  } else {
+                    // Show confirmation dialog before adding reminder
+                    final confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text('Set Reminder'),
+                        content: Text('Add a reminder for ${stop.stopName}?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: Text('Add'),
+                          ),
+                        ],
+                      ),
+                    );
+
+                    if (confirm == true) {
+                      await ReminderService.instance.addReminder(
+                        routeId: route!.routeId,
+                        routeName: route!.name,
+                        stopNumber: stop.stopNumber,
+                        stopName: stop.stopName,
+                      );
+
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Reminder set for ${stop.stopName}'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    }
+                  }
+                }
+              },
+              child: Container(
                 height: 55,
                 margin: const EdgeInsets.only(right: 16),
-                // elevation: 2,
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    spacing: 28,
-                    children: [
-                      Text(
-                        time,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: reached
-                              ? const Color.fromARGB(255, 40, 47, 53)
-                              : Colors.grey.shade600,
-                        ),
-                        softWrap: true,
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(8)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.shade100.withOpacity(0.15),
+                      blurRadius: 2,
+                      offset: const Offset(2, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  spacing: 28,
+                  children: [
+                    Text(
+                      stop.formattedReachedTime,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: stop.reached
+                            ? const Color.fromARGB(255, 40, 47, 53)
+                            : Colors.grey.shade600,
                       ),
-                      Text(
-                        stopName,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: reached
-                              ? const Color.fromARGB(255, 49, 145, 166)
-                              : Colors.grey.shade600,
-                        ),
+                      softWrap: true,
+                    ),
+                    Text(
+                      stop.stopName,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: stop.reached
+                            ? const Color.fromARGB(255, 49, 145, 166)
+                            : Colors.grey.shade600,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),

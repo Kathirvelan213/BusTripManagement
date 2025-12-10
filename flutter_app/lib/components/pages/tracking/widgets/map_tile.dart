@@ -10,8 +10,13 @@ import 'package:latlong2/latlong.dart';
 
 class MapTile extends StatefulWidget {
   final BusRoute? selectedRoute;
+  final AnimatedMapController animatedMapController;
 
-  const MapTile({super.key, this.selectedRoute});
+  const MapTile({
+    super.key,
+    this.selectedRoute,
+    required this.animatedMapController,
+  });
 
   @override
   State<MapTile> createState() => _MapTileState();
@@ -22,8 +27,6 @@ class _MapTileState extends State<MapTile> with TickerProviderStateMixin {
   late LatLng _currentLocation;
   StreamSubscription? _locationSubscription;
 
-  late final AnimatedMapController _animatedMapController;
-
   List<List<LatLng>> routePoints = [];
 
   @override
@@ -31,9 +34,6 @@ class _MapTileState extends State<MapTile> with TickerProviderStateMixin {
     super.initState();
 
     _currentLocation = LatLng(0, 0);
-
-    // initialize animated map controller
-    _animatedMapController = AnimatedMapController(vsync: this);
 
     _loadRouteData();
     _subscribeToLocationUpdates();
@@ -84,7 +84,7 @@ class _MapTileState extends State<MapTile> with TickerProviderStateMixin {
   }
 
   void _centerOnUser() {
-    _animatedMapController.animateTo(
+    widget.animatedMapController.animateTo(
       dest: _currentLocation,
       zoom: 16,
       curve: Curves.easeInOut,
@@ -98,7 +98,7 @@ class _MapTileState extends State<MapTile> with TickerProviderStateMixin {
     return Stack(
       children: [
         FlutterMap(
-          mapController: _animatedMapController.mapController,
+          mapController: widget.animatedMapController.mapController,
           options: MapOptions(
             initialCenter: LatLng(27.1751, 78.0421),
             initialZoom: 5,
@@ -129,7 +129,7 @@ class _MapTileState extends State<MapTile> with TickerProviderStateMixin {
                 for (final route in routePoints)
                   Polyline(
                     points: route,
-                    strokeWidth: 2,
+                    strokeWidth: 1.5,
                     color: Colors.blue.shade500,
                   ),
               ],

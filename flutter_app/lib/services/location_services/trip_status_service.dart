@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/models/stop_status.dart';
 import 'package:flutter_app/services/api_consumer/api_client.dart';
 import 'package:flutter_app/services/api_consumer/route_stops_api.dart';
+import 'package:flutter_app/services/location_services/route_stops_service.dart';
 
 /// Model to represent a stop and its status
 
@@ -21,6 +22,10 @@ class TripStatusService {
   Future<void> initializeStops(int routeId) async {
     try {
       final data = await getRouteStops(routeId);
+
+      // Populate RouteStopsService with stop locations
+      RouteStopsService.instance.setRouteStops(data);
+
       final stops = data.map((rs) {
         return StopStatus(
           routeId: rs.routeId,
@@ -88,4 +93,4 @@ class TripStatusService {
 }
 
 /// A global navigator key (needed for formatting TimeOfDay outside widgets)
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+// final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();

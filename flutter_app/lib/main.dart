@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/components/nav_control/main_page.dart';
 import 'package:flutter_app/components/pages/route_selection/route_selection_page.dart';
 import 'package:flutter_app/services/hub_services/location_hub_service.dart';
 import 'package:flutter_app/services/auth_services/google_auth_service.dart';
+import 'package:flutter_app/services/notification_services/reminder_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'components/pages/login/login_page.dart';
@@ -10,9 +12,12 @@ import 'components/pages/login/login_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Load .env
-  await dotenv.load(fileName: ".env.production");
+  await dotenv.load(fileName: ".env");
   final LocationHubService locationHubService = LocationHubService();
   await locationHubService.start();
+
+  // Initialize reminder service
+  await ReminderService.instance.initialize();
 
   // Optionally allow self-signed certs in dev: set ALLOW_INSECURE_SSL=true in .env.
   if ((dotenv.env['ALLOW_INSECURE_SSL'] ?? '').toLowerCase() == 'true') {
@@ -82,6 +87,13 @@ class _MainAppState extends State<MainApp> {
     }
 
     return MaterialApp(
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          brightness: Brightness.light,
+        ),
+        useMaterial3: true,
+      ),
       // theme: ThemeData(
       //   colorScheme: ColorScheme.fromSeed(
       //     seedColor: Colors.blue,
@@ -95,22 +107,22 @@ class _MainAppState extends State<MainApp> {
       //   scaffoldBackgroundColor: Colors.white,
       //   cardColor: Colors.white,
       // ),
-      darkTheme: ThemeData(
-        useMaterial3: true,
-        colorScheme: const ColorScheme.dark(
-          primary: Colors.blue,
-          surface: Color(0xFF121212), // proper dark surface
-          surfaceTint: Colors.transparent, // NO blue/purple tint
-          onSurface: Colors.white,
-        ),
-        scaffoldBackgroundColor: const Color(0xFF000000),
-        cardColor: const Color(0xFF1E1E1E), // dark card color
-      ),
+      // darkTheme: ThemeData(
+      //   useMaterial3: true,
+      //   colorScheme: const ColorScheme.dark(
+      //     primary: Colors.blue,
+      //     surface: Color(0xFF121212), // proper dark surface
+      //     surfaceTint: Colors.transparent, // NO blue/purple tint
+      //     onSurface: Colors.white,
+      //   ),
+      //   scaffoldBackgroundColor: const Color(0xFF000000),
+      //   cardColor: const Color(0xFF1E1E1E), // dark card color
+      // ),
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      home: _loggedIn ? const RouteSelectionPage() : const LoginPage(),
+      home: _loggedIn ? const MainPage() : const LoginPage(),
       routes: {
-        "/home": (_) => const RouteSelectionPage(),
+        "/home": (_) => const MainPage(),
       },
     );
   }

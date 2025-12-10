@@ -1,22 +1,66 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/components/pages/tracking/widgets/bus_info.dart';
-import 'package:flutter_app/components/pages/tracking/widgets/info_panel_header.dart';
+import 'package:flutter_map_animations/flutter_map_animations.dart';
+import 'package:flutter_app/components/nav_control/widgets/back_button.dart';
+import 'package:flutter_app/components/pages/tracking/widgets/bus_info/bus_info.dart';
+import 'package:flutter_app/components/pages/tracking/widgets/bus_info/info_panel_header.dart';
 import 'package:flutter_app/components/pages/tracking/widgets/stops/stops_panel.dart';
+import 'package:flutter_app/components/pages/tracking/widgets/dialogs/stop_reminder_dialog.dart';
 import 'package:flutter_app/models/bus_route.dart';
-import 'package:flutter_app/services/hub_services/location_hub_service.dart';
+import 'package:flutter_app/services/location_services/trip_status_service.dart';
+import 'package:latlong2/latlong.dart';
 import './widgets/map_tile.dart';
 
-class TrackingPage extends StatelessWidget {
+class TrackingPage extends StatefulWidget {
   final BusRoute? selectedRoute;
 
   const TrackingPage({super.key, this.selectedRoute});
 
   @override
+  State<TrackingPage> createState() => _TrackingPageState();
+}
+
+class _TrackingPageState extends State<TrackingPage>
+    with TickerProviderStateMixin {
+  late final AnimatedMapController _animatedMapController;
+
+  @override
+  void initState() {
+    super.initState();
+    _animatedMapController = AnimatedMapController(vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _animatedMapController.dispose();
+    super.dispose();
+  }
+
+  void _centerOnLocation(LatLng newLocation) {
+    print("Centering on location: $newLocation");
+    _animatedMapController.animateTo(
+      dest: newLocation,
+      zoom: 16,
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void _showReminderDialog() {
+    final stops = TripStatusService.instance.stops;
+    showDialog(
+      context: context,
+      builder: (context) => StopReminderDialog(
+        stops: stops,
+        route: widget.selectedRoute,
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      body: CustomScrollView(
+    return Stack(children: [
+      CustomScrollView(
         slivers: [
           SliverAppBar(
             automaticallyImplyLeading: false,
@@ -50,10 +94,15 @@ class TrackingPage extends StatelessWidget {
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(16 * t),
-                            child: MapTile(selectedRoute: selectedRoute),
+                            child: MapTile(
+                              selectedRoute: widget.selectedRoute,
+                              animatedMapController: _animatedMapController,
+                            ),
                           )),
                     ),
-                    InfoPanelHeader(),
+                    InfoPanelHeader(
+                      onReminderTap: _showReminderDialog,
+                    ),
                   ],
                 ));
               },
@@ -64,14 +113,19 @@ class TrackingPage extends StatelessWidget {
               color: Colors.white,
               child: Column(
                 children: [
-                  BusInfo(selectedRoute: selectedRoute),
-                  StopsPanel(),
+                  BusInfo(selectedRoute: widget.selectedRoute),
+                  StopsPanel(
+                    animatedMapController: _animatedMapController,
+                    centerOnLocation: _centerOnLocation,
+                    route: widget.selectedRoute,
+                  ),
                 ],
               ),
             ),
           ),
         ],
       ),
-    );
+      CustomBackButton()
+    ]);
   }
 }
