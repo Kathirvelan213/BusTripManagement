@@ -39,6 +39,8 @@ class RouteStopsService {
     return stop != null ? LatLng(stop.lat, stop.lng) : null;
   }
 
+  int get totalStops => _stopsBySequence.length;
+
   /// Get RouteStop by sequence
   RouteStop? getStopBySequence(int sequence) {
     return _stopsBySequence[sequence];

@@ -13,6 +13,7 @@ dependencies:
   google_sign_in: ^6.1.5
   http: ^1.2.0
   flutter_secure_storage: ^9.0.0
+  flutter_local_notifications: ^17.0.0
 
 
 dev_dependencies:

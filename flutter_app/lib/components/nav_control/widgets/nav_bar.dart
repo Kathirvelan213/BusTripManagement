@@ -33,8 +33,11 @@ class _NavBarState extends State<NavBar> {
         ),
       ],
       currentIndex: widget.currentIndex,
+      unselectedItemColor: Colors.blueGrey,
       selectedItemColor: Theme.of(context).colorScheme.appPrimary2,
       onTap: widget.onTap,
+      showUnselectedLabels: false,
+      type: BottomNavigationBarType.fixed,
     );
   }
 }

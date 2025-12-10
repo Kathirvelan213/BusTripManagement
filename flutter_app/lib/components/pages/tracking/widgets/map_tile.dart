@@ -1,3 +1,4 @@
+import 'package:flutter_app/services/location_services/route_stops_service.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -93,6 +94,20 @@ class _MapTileState extends State<MapTile> with TickerProviderStateMixin {
     );
   }
 
+  LatLng getCenterPoint() {
+    final first = RouteStopsService.instance.getStopLocationBySequence(1) ??
+        LatLng(27.1751, 78.0421);
+
+    final last = RouteStopsService.instance
+            .getStopLocationBySequence(RouteStopsService.instance.totalStops) ??
+        LatLng(27.1751, 78.0421);
+
+    final lat = (first.latitude + last.latitude) / 2;
+    final lng = (first.longitude + last.longitude) / 2;
+
+    return LatLng(lat, lng);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -100,8 +115,8 @@ class _MapTileState extends State<MapTile> with TickerProviderStateMixin {
         FlutterMap(
           mapController: widget.animatedMapController.mapController,
           options: MapOptions(
-            initialCenter: LatLng(27.1751, 78.0421),
-            initialZoom: 5,
+            initialCenter: getCenterPoint(),
+            initialZoom: 11,
             minZoom: 2,
             maxZoom: 20,
             initialRotation: 0,

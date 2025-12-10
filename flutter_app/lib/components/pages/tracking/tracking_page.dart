@@ -4,7 +4,7 @@ import 'package:flutter_app/components/nav_control/widgets/back_button.dart';
 import 'package:flutter_app/components/pages/tracking/widgets/bus_info/bus_info.dart';
 import 'package:flutter_app/components/pages/tracking/widgets/bus_info/info_panel_header.dart';
 import 'package:flutter_app/components/pages/tracking/widgets/stops/stops_panel.dart';
-import 'package:flutter_app/components/pages/tracking/widgets/dialogs/stop_reminder_dialog.dart';
+import 'package:flutter_app/components/pages/tracking/dialogs/stop_reminder_dialog.dart';
 import 'package:flutter_app/models/bus_route.dart';
 import 'package:flutter_app/services/location_services/trip_status_service.dart';
 import 'package:latlong2/latlong.dart';

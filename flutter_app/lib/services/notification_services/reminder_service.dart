@@ -53,16 +53,36 @@ class ReminderService {
     required int stopNumber,
     required String stopName,
   }) async {
-    // Check if reminder already exists
-    final exists = remindersNotifier.value.any(
+    print("adding reminder for $routeName - $stopName");
+    // Check if reminder already exists (active)
+    final activeExists = remindersNotifier.value.any(
       (r) => r.routeId == routeId && r.stopNumber == stopNumber && r.isActive,
     );
 
-    if (exists) {
+    if (activeExists) {
       debugPrint('Reminder already exists for this stop');
       return;
     }
 
+    // Check if a disabled reminder exists for this stop
+    StopReminder? disabledReminder;
+    try {
+      disabledReminder = remindersNotifier.value.firstWhere(
+        (r) =>
+            r.routeId == routeId && r.stopNumber == stopNumber && !r.isActive,
+      );
+    } catch (e) {
+      disabledReminder = null;
+    }
+
+    if (disabledReminder != null) {
+      // Enable the disabled reminder instead of creating a new one
+
+      await toggleReminder(disabledReminder.id);
+      return;
+    }
+
+    // Create a new reminder if no disabled one exists
     final newReminder = StopReminder(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       routeId: routeId,
@@ -78,8 +98,9 @@ class ReminderService {
 
   /// Remove a reminder by ID
   Future<void> removeReminder(String id) async {
-    remindersNotifier.value =
+    final updated =
         remindersNotifier.value.where((reminder) => reminder.id != id).toList();
+    remindersNotifier.value = updated;
     await _saveReminders();
   }
 
@@ -87,7 +108,8 @@ class ReminderService {
   Future<void> toggleReminder(String id) async {
     final index = remindersNotifier.value.indexWhere((r) => r.id == id);
     if (index != -1) {
-      final updated = [...remindersNotifier.value];
+      // Create a new list with updated reminder
+      final updated = List<StopReminder>.from(remindersNotifier.value);
       updated[index].isActive = !updated[index].isActive;
       remindersNotifier.value = updated;
       await _saveReminders();

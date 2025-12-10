@@ -5,24 +5,29 @@ import 'package:flutter_app/components/pages/route_selection/route_selection_pag
 import 'package:flutter_app/services/hub_services/location_hub_service.dart';
 import 'package:flutter_app/services/auth_services/google_auth_service.dart';
 import 'package:flutter_app/services/notification_services/reminder_service.dart';
+import 'package:flutter_app/services/notification_services/notification_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'components/pages/login/login_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
   // Load .env
   await dotenv.load(fileName: ".env");
-  final LocationHubService locationHubService = LocationHubService();
-  await locationHubService.start();
-
-  // Initialize reminder service
-  await ReminderService.instance.initialize();
-
-  // Optionally allow self-signed certs in dev: set ALLOW_INSECURE_SSL=true in .env.
+  
+  // IMPORTANT: Set up SSL override BEFORE any network calls
   if ((dotenv.env['ALLOW_INSECURE_SSL'] ?? '').toLowerCase() == 'true') {
     HttpOverrides.global = _DevHttpOverrides();
   }
+  
+  // Initialize services
+  await ReminderService.instance.initialize();
+  await NotificationService.instance.initialize();
+  
+  // Start SignalR hub AFTER SSL override is configured
+  final LocationHubService locationHubService = LocationHubService();
+  await locationHubService.start();
 
   runApp(const MainApp());
 }
