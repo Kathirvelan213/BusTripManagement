@@ -2,11 +2,13 @@ class RouteStatusResponse {
   final int routeId;
   final int nextStopIndex;
   final List<StopStatusInfo> reachedStops;
+  final LocationInfo? lastLocation;
 
   RouteStatusResponse({
     required this.routeId,
     required this.nextStopIndex,
     required this.reachedStops,
+    this.lastLocation,
   });
 
   factory RouteStatusResponse.fromJson(Map<String, dynamic> json) {
@@ -16,6 +18,29 @@ class RouteStatusResponse {
       reachedStops: (json['reachedStops'] as List<dynamic>)
           .map((item) => StopStatusInfo.fromJson(item as Map<String, dynamic>))
           .toList(),
+      lastLocation: json['lastLocation'] != null
+          ? LocationInfo.fromJson(json['lastLocation'] as Map<String, dynamic>)
+          : null,
+    );
+  }
+}
+
+class LocationInfo {
+  final double latitude;
+  final double longitude;
+  final DateTime timestamp;
+
+  LocationInfo({
+    required this.latitude,
+    required this.longitude,
+    required this.timestamp,
+  });
+
+  factory LocationInfo.fromJson(Map<String, dynamic> json) {
+    return LocationInfo(
+      latitude: (json['latitude'] as num).toDouble(),
+      longitude: (json['longitude'] as num).toDouble(),
+      timestamp: DateTime.parse(json['timestamp'] as String),
     );
   }
 }

@@ -18,6 +18,7 @@ namespace BusTripManagement.BAL
 
         private readonly Dictionary<int, int> _nextStopIndex = new();
         private readonly Dictionary<int, List<RouteStop>> _routeStops = new();
+        private readonly Dictionary<int, LocationInfo> _lastLocations = new();
 
         public RouteTrackingManager(IServiceProvider serviceProvider)
         {
@@ -43,6 +44,14 @@ namespace BusTripManagement.BAL
 
             if (idx >= stops.Count) return null; // already finished
 
+            // Store the last known location for this route
+            _lastLocations[routeId] = new LocationInfo
+            {
+                Latitude = lat,
+                Longitude = lng,
+                Timestamp = DateTime.Now
+            };
+
             var nextStop = stops[idx];
             var distance = DistanceInMeters(lat, lng, nextStop.Lat, nextStop.Lng);
 
@@ -66,6 +75,7 @@ namespace BusTripManagement.BAL
         {
             _nextStopIndex.Remove(routeId);
             _routeStops.Remove(routeId);
+            _lastLocations.Remove(routeId);
         }
 
         public async Task<RouteStatusResponse?> GetRouteStatus(int routeId)
@@ -88,7 +98,8 @@ namespace BusTripManagement.BAL
                 {
                     RouteId = routeId,
                     NextStopIndex = 0,
-                    ReachedStops = new List<StopStatusInfo>()
+                    ReachedStops = new List<StopStatusInfo>(),
+                    LastLocation = _lastLocations.ContainsKey(routeId) ? _lastLocations[routeId] : null
                 };
             }
 
@@ -111,7 +122,8 @@ namespace BusTripManagement.BAL
             {
                 RouteId = routeId,
                 NextStopIndex = nextIndex,
-                ReachedStops = reachedStops
+                ReachedStops = reachedStops,
+                LastLocation = _lastLocations.ContainsKey(routeId) ? _lastLocations[routeId] : null
             };
         }
 

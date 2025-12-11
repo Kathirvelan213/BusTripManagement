@@ -3,6 +3,7 @@ import 'package:flutter_app/models/stop_status.dart';
 import 'package:flutter_app/models/route_status_response.dart';
 import 'package:flutter_app/services/api_consumer/route_stops_api.dart';
 import 'package:flutter_app/services/api_consumer/route_tracking_api.dart';
+import 'package:flutter_app/services/location_services/location_service.dart';
 import 'package:flutter_app/services/location_services/route_stops_service.dart';
 import 'package:flutter_app/services/notification_services/reminder_service.dart';
 import 'package:flutter_app/services/notification_services/notification_service.dart';
@@ -31,6 +32,15 @@ class TripStatusService {
 
       // Fetch current route status from server
       final routeStatus = await getRouteStatus(routeId);
+
+      // Initialize LocationService with last known location if available
+      if (routeStatus?.lastLocation != null) {
+        LocationService.updateLocation(
+          routeId,
+          routeStatus!.lastLocation!.latitude,
+          routeStatus.lastLocation!.longitude,
+        );
+      }
 
       final stops = data.map((rs) {
         // Check if this stop has been reached based on server status
