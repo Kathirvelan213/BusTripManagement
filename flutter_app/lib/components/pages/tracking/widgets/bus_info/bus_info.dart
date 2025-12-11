@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/components/pages/tracking/widgets/bus_info/live_time.dart';
 import 'package:flutter_app/components/pages/tracking/widgets/pinging_location_icon.dart';
 import 'package:flutter_app/config/custom_colors.dart';
 import 'package:flutter_app/models/bus_route.dart';
@@ -65,11 +66,7 @@ class BusInfo extends StatelessWidget {
                               ))
                         ],
                       ),
-                      Text(TimeOfDay.now().format(context),
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey.shade600,
-                          )),
+                      LiveTime(),
                     ],
                   )
                 ],

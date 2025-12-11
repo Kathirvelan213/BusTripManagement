@@ -137,7 +137,7 @@ class _StopReminderDialogState extends State<StopReminderDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: const Text('Close'),
         ),
       ],
     );
